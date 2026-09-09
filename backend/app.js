@@ -1,7 +1,19 @@
+require('dotenv').config();
 const express = require('express');
 
+const authRoutes = require('./routes/auth');
+const booksRoutes = require('./routes/books');
 const app = express();
+const mongoose = require('mongoose');
 
+mongoose
+  .connect(process.env.URL_MONGOSE_API, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+app.use(express.json());
+
+//Handle CORS issues
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
@@ -12,24 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/books', (req, res, next) => {
-  const books = [
-    {
-      title: 'book1',
-    },
-    {
-      title: 'book2',
-    },
-  ];
-  res.locals.someKey = 'Requete reçue !';
-  res.status(200).json(books);
-  next();
-});
-
-app.use((req, res, next) => {
-  res.status(201);
-  res.json({ message: `${res.locals.someKey}` });
-  next();
-});
+app.use('/api/auth', authRoutes);
+app.use('/api/books', booksRoutes);
 
 module.exports = app;
