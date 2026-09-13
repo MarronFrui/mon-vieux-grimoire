@@ -1,6 +1,7 @@
 const express = require('express');
 
 const CreateBookCtrl = require('../controler/createBook.js');
+console.log(CreateBookCtrl.createBook);
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
@@ -74,7 +75,7 @@ router.get('/:id', (req, res, next) => {
   console.log('Test param: ' + req.params.id); // "Test param: foo"
 });
 
-//router.post('/', middleware,  (CreateBookCtrl.CreateBook())
+// router.post('/', CreateBookCtrl.createBook);
 
 router.put('/:id', (req, res, next) => {
   // TODO: JSON body OR { book: string, image: file } → { message }
