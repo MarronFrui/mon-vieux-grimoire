@@ -1,68 +1,12 @@
 const express = require('express');
 
 const CreateBookCtrl = require('../controler/createBook.js');
-console.log(CreateBookCtrl.createBook);
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-  const books = [
-    {
-      _id: '1',
-      userId: 'clc4wj5lh3gyi0ak4eq4n8syr',
-      title: 'Milwaukee Mission',
-      author: 'Elder Cooper',
-      imageUrl: 'https://via.placeholder.com/206x260',
-      year: 2021,
-      genre: 'Policier',
-      ratings: [
-        {
-          userId: '1',
-          grade: 5,
-        },
-        {
-          userId: '1',
-          grade: 5,
-        },
-        {
-          userId: 'clc4wj5lh3gyi0ak4eq4n8syr',
-          grade: 5,
-        },
-        {
-          userId: '1',
-          grade: 5,
-        },
-      ],
-      averageRating: 3,
-    },
-    {
-      _id: '2',
-      userId: 'clbxs3tag6jkr0biul4trzbrv',
-      title: 'Book for Esther',
-      author: 'Alabaster',
-      imageUrl: 'https://via.placeholder.com/206x260',
-      year: 2022,
-      genre: 'Paysage',
-      ratings: [
-        {
-          userId: 'clbxs3tag6jkr0biul4trzbrv',
-          grade: 4,
-        },
-        {
-          userId: '1',
-          grade: 5,
-        },
-        {
-          userId: '1',
-          grade: 5,
-        },
-        {
-          userId: '1',
-          grade: 5,
-        },
-      ],
-      averageRating: 4.2,
-    },
-  ]; //Temp hardcoded books (will fetch from the dB in the future)
+  Thing.find()
+    .then((things) => res.status(200).json(things))
+    .catch((error) => res.status(400).json({ error }));
   res.status(200).json(books);
   next();
 });
@@ -72,10 +16,12 @@ router.get('/bestrating', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
-  console.log('Test param: ' + req.params.id); // "Test param: foo"
+  Thing.findOne({ _id: req.params.id })
+    .then((thing) => res.status(200).json(thing))
+    .catch((error) => res.status(404).json({ error }));
 });
 
-// router.post('/', CreateBookCtrl.createBook);
+router.post('/', CreateBookCtrl.createBook);
 
 router.put('/:id', (req, res, next) => {
   // TODO: JSON body OR { book: string, image: file } → { message }
