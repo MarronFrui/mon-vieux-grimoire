@@ -1,27 +1,17 @@
 const express = require('express');
 
-const CreateBookCtrl = require('../controler/createBook.js');
+const BookCtrl = require('../controler/createBook.js');
 const router = express.Router();
 
-router.get('/', (req, res, next) => {
-  Thing.find()
-    .then((things) => res.status(200).json(things))
-    .catch((error) => res.status(400).json({ error }));
-  res.status(200).json(books);
-  next();
-});
+router.get('/', BookCtrl.getBooks);
 
 router.get('/bestrating', (req, res, next) => {
   // TODO: array of top 3 — must stay ABOVE /:id
 });
 
-router.get('/:id', (req, res, next) => {
-  Thing.findOne({ _id: req.params.id })
-    .then((thing) => res.status(200).json(thing))
-    .catch((error) => res.status(404).json({ error }));
-});
+router.get('/:id', BookCtrl.getBook);
 
-router.post('/', CreateBookCtrl.createBook);
+router.post('/', BookCtrl.createBook);
 
 router.put('/:id', (req, res, next) => {
   // TODO: JSON body OR { book: string, image: file } → { message }
