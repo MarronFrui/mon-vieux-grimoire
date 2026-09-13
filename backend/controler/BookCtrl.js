@@ -1,7 +1,8 @@
 const Thing = require('../models/Thing.js');
+// const mock = require('../../frontend/public/data/data.json');
 
 module.exports = {
-  createBook: function (req, res, next) {
+  createBook: function (req, res, _next) {
     delete req.body._id;
     const thing = new Thing({
       ...req.body,
@@ -12,7 +13,9 @@ module.exports = {
       .catch((error) => res.status(400).json({ error }));
   },
 
-  getBooks: function (req, res, next) {
+  getBooks: function (_req, res, next) {
+    // console.log(mock);
+    // res.status(200).json(mock);
     Thing.find()
       .then((things) => res.status(200).json(things))
       .catch((error) => res.status(400).json({ error }));

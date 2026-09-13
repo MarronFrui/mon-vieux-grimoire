@@ -13,6 +13,9 @@ mongoose
 
 app.use(express.json());
 
+var morgan = require('morgan');
+app.use(morgan('tiny'));
+
 //Handle CORS issues
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');

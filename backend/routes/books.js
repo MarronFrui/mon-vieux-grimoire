@@ -1,6 +1,6 @@
 const express = require('express');
 
-const BookCtrl = require('../controler/createBook.js');
+const BookCtrl = require('../controler/BookCtrl.js');
 const router = express.Router();
 
 router.get('/', BookCtrl.getBooks);
