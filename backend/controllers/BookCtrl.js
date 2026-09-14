@@ -1,3 +1,4 @@
+const { isFunctionDeclaration } = require('typescript');
 const Thing = require('../models/Thing.js');
 // const mock = require('../../frontend/public/data/data.json');
 
@@ -27,5 +28,17 @@ module.exports = {
       .then((thing) => res.status(200).json(thing))
       .catch((error) => res.status(404).json({ error }));
     next();
+  },
+
+  updateBook: function (req, res, _next) {
+    Thing.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
+      .then(() => res.status(200).json({ message: 'Objet modifié !' }))
+      .catch((error) => res.status(400).json({ error }));
+  },
+
+  deleteBook: function (req, res, _next) {
+    Thing.deleteOne({ _id: req.params.id })
+      .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
+      .catch((error) => res.status(400).json({ error }));
   },
 };

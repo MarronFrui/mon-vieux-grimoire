@@ -13,13 +13,9 @@ router.get('/:id', BookCtrl.getBook);
 
 router.post('/', BookCtrl.createBook);
 
-router.put('/:id', (req, res, next) => {
-  // TODO: JSON body OR { book: string, image: file } → { message }
-});
+router.put('/:id', BookCtrl.updateBook);
 
-router.delete('/:id', (req, res, next) => {
-  // TODO: delete book + image file → { message }
-});
+router.delete('/:id', BookCtrl.deleteBook);
 
 router.post('/:id/rating', (req, res, next) => {
   // TODO: { userId, rating } → updated book
