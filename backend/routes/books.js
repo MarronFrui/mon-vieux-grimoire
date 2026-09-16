@@ -6,9 +6,7 @@ const auth = require('../middleware/auth');
 
 router.get('/', BookCtrl.getBooks);
 
-router.get('/bestrating', (req, res, next) => {
-  // TODO: array of top 3 — must stay ABOVE /:id
-});
+router.get('/bestrating', auth, BookCtrl.bestRating);
 
 router.get('/:id', auth, BookCtrl.getBook);
 
@@ -18,8 +16,6 @@ router.put('/:id', auth, BookCtrl.updateBook);
 
 router.delete('/:id', auth, BookCtrl.deleteBook);
 
-router.post('/:id/rating', (req, res, next) => {
-  // TODO: { userId, rating } → updated book
-});
+router.post('/:id/rating', auth, BookCtrl.rating);
 
 module.exports = router;
