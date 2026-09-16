@@ -12,18 +12,16 @@ module.exports = {
       .catch((error) => res.status(400).json({ error }));
   },
 
-  getBooks: function (_req, res, next) {
+  getBooks: function (_req, res, _next) {
     Thing.find()
       .then((things) => res.status(200).json(things))
       .catch((error) => res.status(400).json({ error }));
-    next();
   },
 
-  getBook: function (req, res, next) {
+  getBook: function (req, res, _next) {
     Thing.findOne({ _id: req.params.id })
       .then((thing) => res.status(200).json(thing))
       .catch((error) => res.status(404).json({ error }));
-    next();
   },
 
   updateBook: function (req, res, _next) {
@@ -37,4 +35,8 @@ module.exports = {
       .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
       .catch((error) => res.status(400).json({ error }));
   },
+
+  bestRating: function (req, res, _next) {},
+
+  rating: function (req, res, _next) {},
 };

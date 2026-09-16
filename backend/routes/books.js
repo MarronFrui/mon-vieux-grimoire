@@ -2,6 +2,7 @@ const express = require('express');
 
 const BookCtrl = require('../controllers/BookCtrl.js');
 const router = express.Router();
+const auth = require('../middleware/auth');
 
 router.get('/', BookCtrl.getBooks);
 
@@ -9,13 +10,13 @@ router.get('/bestrating', (req, res, next) => {
   // TODO: array of top 3 — must stay ABOVE /:id
 });
 
-router.get('/:id', BookCtrl.getBook);
+router.get('/:id', auth, BookCtrl.getBook);
 
-router.post('/', BookCtrl.createBook);
+router.post('/', auth, BookCtrl.createBook);
 
-router.put('/:id', BookCtrl.updateBook);
+router.put('/:id', auth, BookCtrl.updateBook);
 
-router.delete('/:id', BookCtrl.deleteBook);
+router.delete('/:id', auth, BookCtrl.deleteBook);
 
 router.post('/:id/rating', (req, res, next) => {
   // TODO: { userId, rating } → updated book
