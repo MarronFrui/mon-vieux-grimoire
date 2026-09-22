@@ -2,9 +2,10 @@ const Thing = require('../models/Thing.js');
 
 module.exports = {
   createBook: function (req, res, _next) {
-    delete req.body._id;
     const thing = new Thing({
       ...req.body,
+      userId: req.auth.userId,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
     });
     thing
       .save()
