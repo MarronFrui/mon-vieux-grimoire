@@ -1,5 +1,4 @@
 const express = require('express');
-const multer = require('multer');
 
 const upload = multer({ dest: './public/data/uploads/' });
 const BookCtrl = require('../controllers/BookCtrl.js');
