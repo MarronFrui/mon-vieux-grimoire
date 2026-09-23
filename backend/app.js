@@ -17,7 +17,7 @@ var morgan = require('morgan');
 app.use(morgan('tiny'));
 
 //Handle CORS issues
-app.use((req, res, next) => {
+app.use((_req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
     'Access-Control-Allow-Headers',

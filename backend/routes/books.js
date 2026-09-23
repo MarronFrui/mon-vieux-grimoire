@@ -1,9 +1,9 @@
 const express = require('express');
 
-const upload = multer({ dest: './public/data/uploads/' });
 const BookCtrl = require('../controllers/BookCtrl.js');
 const router = express.Router();
 const auth = require('../middleware/auth');
+const multer = require('../middleware/multer-config.js');
 
 router.get('/', BookCtrl.getBooks);
 
@@ -11,7 +11,7 @@ router.get('/bestrating', auth, BookCtrl.bestRating);
 
 router.get('/:id', auth, BookCtrl.getBook);
 
-router.post('/', auth, upload.single('imageUrl'), BookCtrl.createBook);
+router.post('/', auth, multer, BookCtrl.createBook);
 
 router.put('/:id', auth, BookCtrl.updateBook);
 
