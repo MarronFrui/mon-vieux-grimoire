@@ -1,4 +1,5 @@
 const Thing = require('../models/Thing.js');
+const fs = require('fs');
 
 module.exports = {
   createBook: function (req, res, _next) {
@@ -57,9 +58,12 @@ module.exports = {
         if (thing.userId != req.auth.userId) {
           res.status(401).json({ message: 'Non-autorisé' });
         } else {
-          Thing.deleteOne({ _id: req.params.id })
-            .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
-            .catch((error) => res.status((401).json({ error })));
+          const filename = thing.imageUrl.split('/images/')[1];
+          fs.unlink(`images/${filename}`, () => {
+            Thing.deleteOne({ _id: req.params.id })
+              .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
+              .catch((error) => res.status((401).json({ error })));
+          });
         }
       })
       .catch((error) => res.status(400).json({ error }));
