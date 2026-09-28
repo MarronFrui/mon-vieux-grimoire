@@ -52,8 +52,16 @@ module.exports = {
   },
 
   deleteBook: function (req, res, _next) {
-    Thing.deleteOne({ _id: req.params.id })
-      .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
+    Thing.findOne({ _id: req.params.id })
+      .then((thing) => {
+        if (thing.userId != req.auth.userId) {
+          res.status(400).json({ error });
+        } else {
+          Thing.deleteOne({ _id: req.params.id })
+            .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
+            .catch((error) => res.status((401).json({ error })));
+        }
+      })
       .catch((error) => res.status(400).json({ error }));
   },
 
