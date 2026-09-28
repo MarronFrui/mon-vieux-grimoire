@@ -55,7 +55,7 @@ module.exports = {
     Thing.findOne({ _id: req.params.id })
       .then((thing) => {
         if (thing.userId != req.auth.userId) {
-          res.status(400).json({ error });
+          res.status(401).json({ message: 'Non-autorisé' });
         } else {
           Thing.deleteOne({ _id: req.params.id })
             .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
@@ -66,7 +66,7 @@ module.exports = {
   },
 
   rating: function (req, res, _next) {
-    Thing.findOne({ _id: req.params.id }, 'rating')
+    Thing.findOne({ _id: req.params.id }, 'averageRating')
       .then((thing) => {
         if (!thing) return res.status(404).json({ error: 'Book not found' });
         res.status(200).json({ rating: thing.averageRating });
