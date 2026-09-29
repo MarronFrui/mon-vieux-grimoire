@@ -33,7 +33,7 @@ module.exports = {
   updateBook: function (req, res, _next) {
     const thingObject = req.file
       ? {
-          ...JSON.parse(req.body.thing),
+          ...JSON.parse(req.body.book),
           imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         }
       : { ...req.body };
