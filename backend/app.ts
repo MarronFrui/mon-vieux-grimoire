@@ -1,20 +1,29 @@
-require('dotenv').config();
-const express = require('express');
-const path = require('path');
+import 'dotenv/config';
+import express from 'express';
+import path from 'path';
+import mongoose from 'mongoose';
+import morgan from 'morgan';
+import { fileURLToPath } from 'url';
 
-const authRoutes = require('./routes/auth');
-const booksRoutes = require('./routes/books');
+import authRoutes from './routes/auth.ts';
+import booksRoutes from './routes/books.ts';
+
+// ESM has no __dirname, we rebuild it from this file's own URL
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const app = express();
-const mongoose = require('mongoose');
+
+if (process.env['URL_MONGOSE_API'] === undefined) {
+  console.log('Connexion à MongoDB échouée !');
+  process.exit(1);
+}
 
 mongoose
-  .connect(process.env.URL_MONGOSE_API, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(process.env['URL_MONGOSE_API'])
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 app.use(express.json());
-
-var morgan = require('morgan');
 app.use(morgan('tiny'));
 
 //Handle CORS issues
@@ -32,4 +41,4 @@ app.use('/api/auth', authRoutes);
 app.use('/api/books', booksRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-module.exports = app;
+export default app;

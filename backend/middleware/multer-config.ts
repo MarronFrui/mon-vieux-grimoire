@@ -1,4 +1,5 @@
-const multer = require('multer');
+import multer from 'multer';
+import sharp from 'sharp';
 
 const MIME_TYPES = {
   'image/jpg': 'jpg',
@@ -6,15 +7,24 @@ const MIME_TYPES = {
   'image/png': 'png',
 };
 
+// const sharp: (req, file, next) => {};
+
+function isKnownMime(maybeMimeType: string): maybeMimeType is keyof typeof MIME_TYPES {
+  return maybeMimeType in MIME_TYPES;
+}
+
 const storage = multer.diskStorage({
   destination: (_req, _file, callback) => {
     callback(null, 'images');
   },
   filename: (_req, file, callback) => {
     const name = file.originalname.split(' ').join('_');
+    if (!isKnownMime(file.mimetype)) {
+      return callback(new Error('Wrong file type'), '');
+    }
     const extension = MIME_TYPES[file.mimetype];
     callback(null, name + Date.now() + '.' + extension);
   },
 });
 
-module.exports = multer({ storage }).single('image');
+export default multer({ storage }).single('image');
