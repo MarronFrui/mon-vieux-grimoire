@@ -1,15 +1,15 @@
-import Thing from '../models/Thing.ts';
+import Book from '../models/Book.ts';
 import fs from 'node:fs';
 import type { RequestHandler } from 'express';
 
 export const createBook: RequestHandler = (req, res, _next) => {
   if (req.auth === undefined) return;
   if (req.file === undefined) return res.status(400).json({ error: 'Image manquante' });
-  const thingObject = JSON.parse(req.body.book);
-  delete thingObject._id;
-  delete thingObject._userId;
-  const book = new Thing({
-    ...thingObject,
+  const requestedBook = JSON.parse(req.body.book);
+  delete requestedBook._id;
+  delete requestedBook._userId;
+  const book = new Book({
+    ...requestedBook,
     userId: req.auth.userId,
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
   });
@@ -20,34 +20,34 @@ export const createBook: RequestHandler = (req, res, _next) => {
 };
 
 export const getBooks: RequestHandler = (_req, res, _next) => {
-  Thing.find()
-    .then((things) => res.status(200).json(things))
+  Book.find()
+    .then((books) => res.status(200).json(books))
     .catch((error) => res.status(400).json({ error }));
 };
 
 export const getBook: RequestHandler = (req, res, _next) => {
-  Thing.findOne({ _id: req.params['id'] })
-    .then((thing) => res.status(200).json(thing))
+  Book.findOne({ _id: req.params['id'] })
+    .then((book) => res.status(200).json(book))
     .catch((error) => res.status(404).json({ error }));
 };
 
 export const updateBook: RequestHandler = (req, res, _next) => {
-  const thingObject = req.file
+  const requestedBook = req.file
     ? {
         ...JSON.parse(req.body.book),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
       }
     : { ...req.body };
 
-  delete thingObject._userId; //Make sure user doesn't try to edit userId on the item
-  Thing.findOne({ _id: req.params['id'] })
-    .then((thing) => {
+  delete requestedBook._userId; //Make sure user doesn't try to edit userId on the item
+  Book.findOne({ _id: req.params['id'] })
+    .then((book) => {
       if (req.auth === undefined) return;
-      if (thing.userId != req.auth.userId) {
+      if (book !== null && book.userId !== req.auth.userId) {
         res.status(400).json({ error });
       } else {
-        Thing.updateOne({ _id: req.params.id }, { ...thingObject, _id: req.params.id })
-          .then(() => res.status(200).json({ message: 'Objet modifié!' }))
+        Book.updateOne({ _id: req.params.id }, { ...thingObject, _id: req.params.id })
+          .then(() => res.status(200).json({ message: 'Objet modifié!' })) // TODO : Need to delete old image if updated
           .catch((error) => res.status(401).json({ error }));
       }
     })
@@ -55,15 +55,15 @@ export const updateBook: RequestHandler = (req, res, _next) => {
 };
 
 export const deleteBook: RequestHandler = (req, res, _next) => {
-  Thing.findOne({ _id: req.params['id'] })
-    .then((thing) => {
+  Book.findOne({ _id: req.params['id'] })
+    .then((book) => {
       if (req.auth === undefined) return;
-      if (thing.userId != req.auth.userId) {
+      if (book.userId != req.auth.userId) {
         res.status(401).json({ message: 'Non-autorisé' });
       } else {
-        const filename = thing.imageUrl.split('/images/')[1];
+        const filename = book.imageUrl.split('/images/')[1];
         fs.unlink(`images/${filename}`, () => {
-          Thing.deleteOne({ _id: req.params['id'] })
+          Book.deleteOne({ _id: req.params['id'] })
             .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
             .catch((error) => res.status((401).json({ error })));
         });
@@ -73,18 +73,18 @@ export const deleteBook: RequestHandler = (req, res, _next) => {
 };
 
 export const setRating: RequestHandler = (req, res, _next) => {
-  Thing.findOne({ _id: req.params['id'] }, 'averageRating')
-    .then((thing) => {
-      if (!thing) return res.status(404).json({ error: 'Book not found' });
-      res.status(200).json({ rating: thing.averageRating });
+  Book.findOne({ _id: req.params['id'] }, 'averageRating')
+    .then((book) => {
+      if (!book) return res.status(404).json({ error: 'Book not found' });
+      res.status(200).json({ rating: book.averageRating });
     })
     .catch((error) => res.status(400).json({ error }));
 };
 
 export const getBestRating: RequestHandler = (_req, res, _next) => {
-  Thing.find()
+  Book.find()
     .sort({ rating: -1 })
     .limit(3)
-    .then((things) => res.status(200).json(things))
+    .then((books) => res.status(200).json(books))
     .catch((error) => res.status(400).json({ error }));
 };
