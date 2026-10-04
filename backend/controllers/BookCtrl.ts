@@ -3,8 +3,12 @@ import fs from 'node:fs';
 import type { RequestHandler } from 'express';
 
 export const createBook: RequestHandler = (req, res, _next) => {
-  if (req.auth === undefined) return;
+  if (req.auth === undefined) {
+    res.status(400).json({ error: 'Bad request' });
+    return;
+  }
   if (req.file === undefined) return res.status(400).json({ error: 'Image manquante' });
+
   const requestedBook = JSON.parse(req.body.book);
   delete requestedBook._id;
   delete requestedBook._userId;
@@ -40,9 +44,13 @@ export const updateBook: RequestHandler = (req, res, _next) => {
     : { ...req.body };
 
   delete requestedBook._userId; //Make sure user doesn't try to edit userId on the item
+
   Book.findOne({ _id: req.params['id'] })
     .then((book) => {
-      if (req.auth === undefined) return;
+      if (req.auth === undefined) {
+        res.status(400).json({ error: 'Bad request' });
+        return;
+      }
       if (book !== null && book.userId !== req.auth.userId) {
         res.status(400).json({ error: 'Book not found' });
       } else {
@@ -57,17 +65,26 @@ export const updateBook: RequestHandler = (req, res, _next) => {
 export const deleteBook: RequestHandler = (req, res, _next) => {
   Book.findOne({ _id: req.params['id'] })
     .then((book) => {
-      if (req.auth === undefined) return;
-      if (book.userId != req.auth.userId) {
-        res.status(401).json({ message: 'Non-autorisé' });
-      } else {
-        const filename = book.imageUrl.split('/images/')[1];
-        fs.unlink(`images/${filename}`, () => {
-          Book.deleteOne({ _id: req.params['id'] })
-            .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
-            .catch((error) => res.status((401).json({ error })));
-        });
+      if (req.auth === undefined) {
+        res.status(400).json({ error: 'Bad request' });
+        return;
       }
+      if (book === null) {
+        res.status(404).json({ error: 'Book not found' });
+        return;
+      }
+
+      if (book.userId !== req.auth.userId) {
+        res.status(401).json({ message: 'Non-autorisé' });
+        return;
+      }
+
+      const filename = book.imageUrl.split('/images/')[1];
+      fs.unlink(`images/${filename}`, () => {
+        Book.deleteOne({ _id: req.params['id'] })
+          .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
+          .catch((error) => res.status(401).json({ error }));
+      });
     })
     .catch((error) => res.status(400).json({ error }));
 };
