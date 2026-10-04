@@ -16,4 +16,4 @@ const bookSchema = new mongoose.Schema({
   ],
 });
 
-export default mongoose.model('Book', bookSchema);
+export default mongoose.model<mongoose.InferSchemaType<typeof bookSchema>>('Book', bookSchema);
