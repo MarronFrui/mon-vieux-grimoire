@@ -44,7 +44,7 @@ export const updateBook: RequestHandler = (req, res, _next) => {
     .then((book) => {
       if (req.auth === undefined) return;
       if (book !== null && book.userId !== req.auth.userId) {
-        res.status(400).json({ error });
+        res.status(400).json({ error: 'Book not found' });
       } else {
         Book.updateOne({ _id: req.params['id'] }, { ...requestedBook, _id: req.params['id'] })
           .then(() => res.status(200).json({ message: 'Objet modifié!' })) // TODO : Need to delete old image if updated
