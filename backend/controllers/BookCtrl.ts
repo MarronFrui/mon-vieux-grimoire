@@ -52,7 +52,7 @@ export const updateBook: RequestHandler = (req, res, _next) => {
         return;
       }
       if (book !== null && book.userId !== req.auth.userId) {
-        res.status(400).json({ error: 'Book not found' });
+        res.status(400).json({ error: 'Livre introuvable' });
       } else {
         Book.updateOne({ _id: req.params['id'] }, { ...requestedBook, _id: req.params['id'] })
           .then(() => res.status(200).json({ message: 'Objet modifié!' })) // TODO : Need to delete old image if updated
@@ -101,7 +101,7 @@ export const setRating: RequestHandler = (req, res, _next) => {
 
   Book.findOne({ _id: req.params['id'] }, 'ratings')
     .then((book) => {
-      if (!book) return res.status(404).json({ error: 'Book not found' });
+      if (!book) return res.status(404).json({ error: 'Livre introuvable' });
 
       if (book.ratings.some((rating) => rating.userId === userId)) {
         res.status(400).json({ error: 'Vous ne pouvez pas noter deux fois le même livre' });
@@ -124,7 +124,7 @@ export const setRating: RequestHandler = (req, res, _next) => {
 
 export const getBestRating: RequestHandler = (_req, res, _next) => {
   Book.find()
-    .sort({ rating: -1 })
+    .sort({ averageRating: -1 })
     .limit(3)
     .then((books) => res.status(200).json(books))
     .catch((error) => res.status(400).json({ error }));
