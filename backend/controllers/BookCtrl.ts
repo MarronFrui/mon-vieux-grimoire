@@ -89,11 +89,35 @@ export const deleteBook: RequestHandler = (req, res, _next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
+export const computeAverageRating = (existingRatings: { grade: number; userId: string }[]) => {
+  const sum = existingRatings.reduce((total, element) => total + element.grade, 0);
+  const average = sum / existingRatings.length;
+  return average;
+};
+
 export const setRating: RequestHandler = (req, res, _next) => {
-  Book.findOne({ _id: req.params['id'] }, 'averageRating')
+  if (req.auth === undefined) return res.status(401).json({ error: 'Unauthorized' });
+  const { userId } = req.auth;
+
+  Book.findOne({ _id: req.params['id'] }, 'ratings')
     .then((book) => {
       if (!book) return res.status(404).json({ error: 'Book not found' });
-      res.status(200).json({ rating: book.averageRating });
+
+      if (book.ratings.some((rating) => rating.userId === userId)) {
+        res.status(400).json({ error: 'Vous ne pouvez pas noter deux fois le même livre' });
+        return;
+      }
+
+      const grade: number = req.body.rating;
+      if (grade < 0 || grade > 5 || typeof grade !== 'number')
+        return res.status(400).json({ error: 'Donnez une note valide' });
+
+      book.ratings.push({ userId, grade });
+      book.averageRating = computeAverageRating(book.ratings);
+      book
+        .save()
+        .then((updatedBook) => res.status(200).json(updatedBook))
+        .catch((error) => res.status(400).json({ error }));
     })
     .catch((error) => res.status(400).json({ error }));
 };
