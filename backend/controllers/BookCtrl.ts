@@ -99,7 +99,7 @@ export const setRating: RequestHandler = (req, res, _next) => {
   if (req.auth === undefined) return res.status(401).json({ error: 'Unauthorized' });
   const { userId } = req.auth;
 
-  Book.findOne({ _id: req.params['id'] }, 'ratings')
+  Book.findOne({ _id: req.params['id'] })
     .then((book) => {
       if (!book) return res.status(404).json({ error: 'Livre introuvable' });
 
@@ -127,5 +127,5 @@ export const getBestRating: RequestHandler = (_req, res, _next) => {
     .sort({ averageRating: -1 })
     .limit(3)
     .then((books) => res.status(200).json(books))
-    .catch((error) => res.status(400).json({ error }));
+    .catch((error) => res.status(500).json({ error }));
 };

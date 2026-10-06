@@ -1,13 +1,10 @@
 import multer from 'multer';
-import sharp from 'sharp';
 
 const MIME_TYPES = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',
   'image/png': 'png',
 };
-
-// const sharp: (req, file, next) => {};
 
 function isKnownMime(maybeMimeType: string): maybeMimeType is keyof typeof MIME_TYPES {
   return maybeMimeType in MIME_TYPES;
