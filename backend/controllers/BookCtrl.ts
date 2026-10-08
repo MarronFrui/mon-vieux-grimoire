@@ -53,9 +53,11 @@ export const updateBook: RequestHandler = (req, res, _next) => {
       }
       if (book === null) {
         res.status(404).json({ error: 'Livre introuvable' });
+        return;
       }
       if (book !== null && book.userId !== req.auth.userId) {
         res.status(403).json({ error: 'Non Autorisé' });
+        return;
       } else {
         Book.updateOne({ _id: req.params['id'] }, { ...requestedBook, _id: req.params['id'] })
           .then(() => {
