@@ -55,7 +55,13 @@ export const updateBook: RequestHandler = (req, res, _next) => {
         res.status(400).json({ error: 'Livre introuvable' });
       } else {
         Book.updateOne({ _id: req.params['id'] }, { ...requestedBook, _id: req.params['id'] })
-          .then(() => res.status(200).json({ message: 'Objet modifié!' })) // TODO : Need to delete old image if updated
+          .then(() => {
+            if (req.file && book) {
+              const oldFilename = book.imageUrl.split('/images/')[1];
+              fs.unlink(`images/${oldFilename}`, () => {});
+            }
+            res.status(200).json({ message: 'Objet modifié!' });
+          })
           .catch((error) => res.status(401).json({ error }));
       }
     })
