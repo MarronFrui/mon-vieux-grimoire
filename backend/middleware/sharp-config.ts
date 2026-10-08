@@ -15,6 +15,7 @@ export const optimizeImage: RequestHandler = async (req, res, next) => {
 
       fs.unlink(originalPath, (err) => {
         if (err) console.error('unlink failed:', err);
+        return;
       });
       console.log(req.file.size, '→', info.size);
       req.file.path = newPath;

@@ -91,7 +91,11 @@ export const deleteBook: RequestHandler = (req, res, _next) => {
       }
 
       const filename = book.imageUrl.split('/images/')[1];
-      fs.unlink(`images/${filename}`, () => {
+      fs.unlink(`images/${filename}`, (err) => {
+        if (err) {
+          console.error('unlink failed:', err);
+          return;
+        }
         Book.deleteOne({ _id: req.params['id'] })
           .then(() => res.status(200).json({ message: 'Objet supprimé !' }))
           .catch((error) => res.status(401).json({ error }));
