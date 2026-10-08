@@ -52,7 +52,7 @@ export const updateBook: RequestHandler = (req, res, _next) => {
         return;
       }
       if (book !== null && book.userId !== req.auth.userId) {
-        res.status(400).json({ error: 'Livre introuvable' });
+        res.status(403).json({ error: 'Non Autorisé' });
       } else {
         Book.updateOne({ _id: req.params['id'] }, { ...requestedBook, _id: req.params['id'] })
           .then(() => {

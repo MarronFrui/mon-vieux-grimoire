@@ -12,6 +12,7 @@ const normalizePort = (val: string) => {
   }
   return false;
 };
+
 const port = normalizePort(process.env['PORT'] || '4000');
 app.set('port', port);
 
@@ -20,11 +21,9 @@ const errorHandler = (error: NodeJS.ErrnoException) => {
     case 'EACCES':
       console.error('system requires elevated privileges.');
       process.exit(1);
-      break;
     case 'EADDRINUSE':
       console.error('port is already in use.');
       process.exit(1);
-      break;
     default:
       console.error(error);
       process.exit(1);
