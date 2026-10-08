@@ -124,7 +124,7 @@ export const setRating: RequestHandler = (req, res, _next) => {
       }
 
       const grade: number = req.body.rating;
-      if (grade < 0 || grade > 5 || typeof grade !== 'number')
+      if (!Number.isInteger(grade) || grade < 0 || grade > 5)
         return res.status(400).json({ error: 'Donnez une note valide' });
 
       book.ratings.push({ userId, grade });
